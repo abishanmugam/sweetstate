@@ -1,0 +1,92 @@
+## Actions API
+
+### Inner function signature
+
+Given a standard action, the arguments of the "inner" function called by **sweet-state** itself are the following:
+
+```js
+const actions = {
+  doSomething:
+    (...args) =>
+    ({ setState, getState, dispatch }, containerProps) => {
+      // your code here
+    },
+};
+```
+
+The first argument is an object containing:
+
+##### - setState
+
+It is the method responsible for triggering actual updates to the store. The default is a synchronous version of React `setState`, supporting only an object as argument (shallow merged into current state). See React guidelines for do's and dont's around `setState` for more around the limitations of shallow merge.
+
+```js
+// inside your action
+setState({ count: 0 });
+```
+
+Note: You can replace this default implementation with a custom one, ([see mutator docs](../advanced/mutator.md)).
+
+##### - getState
+
+This method returns a fresh state every time it is called:
+
+```js
+// inside your action
+if (getState().loading) {
+  /* ... */
+}
+```
+
+Note: Pay attention while storing parts of the state in a variable inside the actions: they might become stale especially during async operations.
+
+##### - dispatch
+
+This method allows you to trigger other actions from the explicitly called action. It can also be used to abstract away some generic functionality or to create private actions that are not exposed to consumers.
+
+```js
+const actions = {
+  increment:
+    (n) =>
+    ({ setState, getState }) => {
+      setState({ count: getState().count + n });
+    },
+  resetTo:
+    (n) =>
+    ({ setState, dispatch }) => {
+      setState({ count: 0 });
+      dispatch(actions.increment(n));
+    },
+};
+```
+
+#### containerProps
+
+The second argument of the action "inner" function contains the custom props that you can set on the `Container` component wrapping the subscriber that is exposing the action. For instance, assuming you set a `multiplyBy` prop on the `CounterContainer`:
+
+```js
+const CounterButton = () => {
+  const [, actions] = useCounter();
+  return <button onClick={actions.increment}>increment by 2</button>;
+};
+
+const App = () => (
+  <CounterContainer multiplyBy={2}>
+    <CounterButton />
+  </CounterContainer>
+);
+```
+
+When the `increment` action is called, it can access the value `multiplyBy` in the `containerProps` object:
+
+```js
+const actions = {
+  increment:
+    (n = 1) =>
+    ({ setState, getState }, { multiplyBy }) => {
+      setState({ count: getState().count + n * multiplyBy });
+    },
+};
+```
+
+This is useful in case you want to make the same data to be available to all actions, or to update the Store state when one of those props is changed ([see Container docs for more](../advanced/container.md)).
