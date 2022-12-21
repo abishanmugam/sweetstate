@@ -1,17 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+// @flow
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+export { createContainer } from './components/container';
+export { createSubscriber } from './components/subscriber';
+export {
+  createHook,
+  createActionsHook,
+  createStateHook,
+} from './components/hook';
+export { default as defaults } from './defaults';
+export { createStore, defaultRegistry } from './store';
+export { batch } from './utils/batched-updates';
+export { createSelector } from './utils/create-selector';
