@@ -1,0 +1,17 @@
+[ignore]
+# Parse errors in JSON files are not ignored. See https://github.com/facebook/flow/issues/2364
+.*/node_modules/.*\.json
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+module.name_mapper='^react-sweet-state' ->'<PROJECT_ROOT>/src'
+include_warnings=true
+server.max_workers=1
+exact_by_default=true
+
+[strict]

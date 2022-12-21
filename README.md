@@ -1,70 +1,99 @@
-# Getting Started with Create React App
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/84136/59560300-2fca8e80-9053-11e9-8f90-76d9ef281ca6.png" alt="react-sweet-state logo" height="150" />
+</p>
+<h1 align="center">react-sweet-state</h1>
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-sweet-state"><img src="https://img.shields.io/npm/v/react-sweet-state.svg"></a>
+  <a href="https://bundlephobia.com/result?p=react-sweet-state"><img src="https://img.shields.io/bundlephobia/minzip/react-sweet-state.svg" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href="https://codecov.io/gh/atlassian/react-sweet-state"><img src="https://codecov.io/gh/atlassian/react-sweet-state/branch/master/graph/badge.svg" /></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" /></a>
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The good parts of Redux and React Context in a flexible, scalable and easy to use state management solution
 
-## Available Scripts
+## Philosophy
 
-In the project directory, you can run:
+sweet-state is heavily inspired by Redux mixed with Context API concepts. It has render-prop components or hooks, connected to Store instances (defined as actions and initial state), receiving the Store state (or part of it) and the actions as a result.
 
-### `npm start`
+Each `Hook`, or `Subscriber`, is responsible to get the instantiated Store (creating a new one with `initialState` if necessary), allowing sharing state across your project extremely easy.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Similar to Redux thunks, actions receive a set of arguments to get and mutate the state. The default `setState` implementation is similar to React `setState`, accepting an object that will be shallow merged with the current state. However, you are free to replace the built-in `setState` logic with a custom mutator implementation, like `immer` for instance.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Basic usage
 
-### `npm test`
+```sh
+npm i react-sweet-state
+# or
+yarn add react-sweet-state
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Creating and consuming stores
 
-### `npm run build`
+```js
+import { createStore, createHook } from 'react-sweet-state';
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+const Store = createStore({
+  // value of the store on initialisation
+  initialState: {
+    count: 0,
+  },
+  // actions that trigger store mutation
+  actions: {
+    increment:
+      () =>
+      ({ setState, getState }) => {
+        // mutate state synchronously
+        setState({
+          count: getState().count + 1,
+        });
+      },
+  },
+  // optional, mostly used for easy debugging
+  name: 'counter',
+});
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+const useCounter = createHook(Store);
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```js
+// app.js
+import { useCounter } from './components/counter';
 
-### `npm run eject`
+const CounterApp = () => {
+  const [state, actions] = useCounter();
+  return (
+    <div>
+      <h1>My counter</h1>
+      {state.count}
+      <button onClick={actions.increment}>+</button>
+    </div>
+  );
+};
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Documentation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Check the [docs website](https://atlassian.github.io/react-sweet-state/) or the [docs folder](docs/README.md).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Examples
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+See sweet-state in action: run `npm run start` and then go and check each folder:
 
-## Learn More
+- Basic example with Flow typing `http://localhost:8080/basic-flow/`
+- Advanced async example with Flow typing `http://localhost:8080/advanced-flow/`
+- Advanced scoped example with Flow typing `http://localhost:8080/advanced-scoped-flow/`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Contributing
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+To test your changes you can run the examples (with `npm run start`).
+Also, make sure you run `npm run preversion` before creating you PR so you will double check that linting, types and tests are fine.
 
-### Code Splitting
+## Thanks
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+This library merges ideas from redux, react-redux, redux-thunk, react-copy-write, unstated, bey, react-apollo just to name a few.
+Moreover it has been the result of months of discussions with [ferborva](https://github.com/ferborva), [pksjce](https://github.com/pksjce), [TimeRaider](https://github.com/TimeRaider), [dpisani](https://github.com/dpisani), [JedWatson](https://github.com/JedWatson), and other devs at [Atlassian](https://github.com/atlassian).
 
-### Analyzing the Bundle Size
+<br/>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[![With ❤️ from Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-cheers-light.png)](https://www.atlassian.com)
